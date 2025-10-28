@@ -4,6 +4,10 @@ import CredentialsProvider from 'next-auth/providers/credentials'
 import { DEFAULT_ROLE, DEFAULT_SUB_ROLE } from '@/lib/auth'
 import { adminDb, adminAuth } from '@/lib/firebase-admin'
 
+// Explicitly mark this route as dynamic (required for GitHub Pages deployment attempts)
+export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
+
 const handler = NextAuth({
   secret: process.env.NEXTAUTH_SECRET,
   cookies: {
