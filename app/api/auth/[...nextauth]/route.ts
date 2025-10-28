@@ -2,9 +2,7 @@ import NextAuth from 'next-auth'
 import GoogleProvider from 'next-auth/providers/google'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { DEFAULT_ROLE, DEFAULT_SUB_ROLE } from '@/lib/auth'
-import { signInWithEmailAndPassword } from 'firebase/auth'
-import { auth } from '@/lib/firebase'
-import { adminDb } from '@/lib/firebase-admin'
+import { adminDb, adminAuth } from '@/lib/firebase-admin'
 
 const handler = NextAuth({
   secret: process.env.NEXTAUTH_SECRET,
@@ -37,14 +35,19 @@ const handler = NextAuth({
         }
 
         try {
-          // Sign in with Firebase Auth
-          const userCredential = await signInWithEmailAndPassword(
-            auth,
-            credentials.email,
-            credentials.password
-          )
+          // Use Firebase Admin SDK for server-side authentication
+          if (!adminAuth) {
+            throw new Error('Server configuration error. Please contact support.')
+          }
+
+          // Verify user credentials using Admin SDK
+          const userRecord = await adminAuth.getUserByEmail(credentials.email)
           
-          const firebaseUser = userCredential.user
+          if (!userRecord) {
+            throw new Error('Invalid credentials')
+          }
+
+          const firebaseUser = userRecord
 
           // Check if Admin SDK is configured
           if (!adminDb) {
