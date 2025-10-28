@@ -1,7 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Explicitly disable static export for server-side features
-  output: undefined,
   images: {
     unoptimized: true,
   },
