@@ -1,4 +1,4 @@
-import { initializeApp } from 'firebase/app'
+import { initializeApp, getApps } from 'firebase/app'
 import { getAuth } from 'firebase/auth'
 import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore'
 
@@ -12,8 +12,10 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_MEASUREMENT_ID,
 }
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig)
+// Initialize Firebase only if not already initialized and config is valid
+const app = !getApps().length && firebaseConfig.apiKey 
+  ? initializeApp(firebaseConfig) 
+  : getApps()[0] || initializeApp(firebaseConfig)
 
 // Initialize Firebase Authentication and get a reference to the service
 export const auth = getAuth(app)
